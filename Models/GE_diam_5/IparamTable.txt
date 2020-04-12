@@ -1,0 +1,3 @@
+fr	tau	posNa	spthr	mean	std
+519	5	47	0	0.15	0.06970
+5192	50	47	0	0	0.168

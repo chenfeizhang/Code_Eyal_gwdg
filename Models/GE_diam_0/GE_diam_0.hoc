@@ -1,0 +1,111 @@
+begintemplate GE_diam_0
+
+public init, biophys
+public create_model
+
+public soma, dend, apic, axon, myelin
+public all, somatic,axonal
+
+objref all,axonal, somatic, this
+
+strdef tstr
+
+proc init() {
+	all = new SectionList()
+	somatic = new SectionList()
+	axonal = new SectionList()
+ 	forall delete_section()
+}
+
+create soma[1]
+create axon[1]
+create myelin[1]
+
+
+
+proc biophys() {
+// based on http://senselab.med.yale.edu/ModelDB/ShowModel.asp?model=139653&file=\L5bPCmodelsEH\models\L5PCbiophys3.hoc the third model from Hay et al 2011
+	forsec all {
+	
+		insert pas
+		g_pas = 0.000033
+		cm = 0.75
+		Ra = 100
+		e_pas = -70
+	}
+
+	soma {
+		insert na
+		insert kv
+		ek = -85
+		ena = 50
+		gbar_na = 800
+		gbar_kv = 320
+
+	}
+	
+	 
+	axon {
+		insert na
+		insert kv	
+		ek = -85
+		ena = 50
+		gbar_na = 8000
+		gbar_kv = 1500
+	}
+	myelin {
+	
+		cm = 0.02
+		Ra = 100
+		g_pas = 6.6e-7
+		e_pas = -70
+	}
+
+	access soma
+	celsius = 37
+
+	
+}
+
+
+
+//creating nee axon - 100 diam length with AIS seperated to 20 segments of 5 micro m. the 9th is the IAS with *5 values of Transient sodium and SKV3.1
+proc create_model(){
+    forsec all{delete_section()}
+    
+    create soma[1]
+	soma {
+		nseg = 6
+		L=30
+		diam =20
+		
+		somatic.append()
+		all.append()
+	}	
+	
+	create axon[1]
+	axon {
+		nseg=25
+		L=50
+		diam =1
+		axonal.append()
+		all.append()
+	}	
+	connect axon(0) , soma(1)
+	
+	create myelin[1]
+	myelin {
+		L = 1000
+		diam = 1
+		nseg = 1+2*int(L/100)
+		all.append()
+	}	
+	connect myelin(0), axon[0](1) 
+
+	
+	access soma
+
+}
+
+
+endtemplate GE_diam_0
